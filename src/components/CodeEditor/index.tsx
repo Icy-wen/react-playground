@@ -1,28 +1,30 @@
 import React from 'react'
-import Editor from './Editor/index.tsx'
-import FileNameList from './FileNameList/index.tsx'
+import Editor from './Editor'
+import FileNameList from './FileNameList'
 import { useContext } from 'react'
-import { PlaygroundContext } from '../../ReactPlaygroud/PlaygroundContext.tsx'
+import { PlaygroundContext } from '../../ReactPlaygroud/PlaygroundContext'
+import { debounce } from 'lodash-es'
 
 export default function CodeEditor() {
- const { 
+  const {
     files,
     setFiles,
     selectedFileName,
     setSelectedFileName,
-   } = useContext(PlaygroundContext)
+  } = useContext(PlaygroundContext)
 
-  const onEditorChange=(value:string)=>{
-    console.log(value);
+  const file = files[selectedFileName]
 
+  const onEditorChange = (value: string) => {
+    console.log(value)
+    files[file.name].value = value
+    setFiles({ ...files })
   }
-  const file=files[selectedFileName]
+
   return (
-    <div style={{height:'100%'}}>
-
-        <FileNameList />
-        <Editor file={file} onChange={onEditorChange} />
-
+    <div style={{width: '100%', height: '100%'}}>
+      <FileNameList />
+      <Editor file={file} onChange={debounce(onEditorChange, 500)}/>
     </div>
   )
 }
